@@ -1012,20 +1012,6 @@ require([
         });
     };
 
-    var updateBtnStyle = function() {
-        added += count;
-        if (added >= records.count) {
-            jquery("#" + id + "_clone > img").remove();
-            jquery("#" + id + "_clone").removeClass("btn-info");
-            jquery("#" + id + "_clone").addClass("btn-success");
-        }
-    };
-
-    var addFeaturesToPortal = function(serviceData) {
-        destinationPortal.addFeatures(service.serviceurl, layerId, JSON.stringify(serviceData.features))
-            .then(updateBtnStyle);
-    };
-
     var deepCopyFeatureService = function(id, folder) {
         var portalUrl = jquery("#" + id).attr("data-portal");
         var portal;
@@ -1105,8 +1091,21 @@ require([
                                             var x = 1;
                                             while (offset <= records.count) {
                                                 x++;
+                                                /*jshint -W083 */
+                                                // to do: move to declaring named functions within this while loop
                                                 portal.harvestRecords(description.url, layerId, offset, count)
-                                                    .then(addFeaturesToPortal(serviceData));
+                                                    .then(function(serviceData) {
+                                                        destinationPortal.addFeatures(service.serviceurl, layerId, JSON.stringify(serviceData.features))
+                                                            .then(function() {
+                                                                added += count;
+                                                                if (added >= records.count) {
+                                                                    jquery("#" + id + "_clone > img").remove();
+                                                                    jquery("#" + id + "_clone").removeClass("btn-info");
+                                                                    jquery("#" + id + "_clone").addClass("btn-success");
+                                                                }
+                                                            });
+                                                    });
+                                                /*jshint +W083 */
                                                 offset += count;
                                             }
                                         });
