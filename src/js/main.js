@@ -154,28 +154,33 @@ require([
         var password = jquery("#portalPassword").val();
         jquery("#portalLoginBtn").button("loading");
         app.portals.sourcePortal.generateToken(username, password)
-            .done(function(response) {
+            .then(function(response) {
+                console.log("outer");
+                console.log(response.token);
+                console.log(response);
                 if (response.token) {
+                    console.log("got token");
                     app.portals.sourcePortal.token = response.token;
                     jquery("#portalLoginModal").modal("hide");
                     jquery("#splashContainer").css("display", "none");
                     jquery("#itemsContainer").css("display", "block");
                     startSession();
-                } else if (response.error.code === 400) {
-                    var html = jquery("#loginErrorTemplate").html();
-                    jquery(".alert-danger.alert-dismissable").remove();
-                    jquery("#portalLoginForm").before(html);
                 }
-            })
-            .fail(function(response) {
-                console.log(response.statusText);
-                var html = jquery("#loginErrorTemplate").html();
-                jquery(".alert-danger.alert-dismissable").remove();
-                jquery("#portalLoginForm").before(html);
-            })
-            .always(function() {
-                jquery("#portalLoginBtn").button("reset");
+                // } else if (response.error.code === 400) {
+                //     var html = jquery("#loginErrorTemplate").html();
+                //     jquery(".alert-danger.alert-dismissable").remove();
+                //     jquery("#portalLoginForm").before(html);
+                // }
             });
+            // .fail(function(response) {
+            //     console.log(response.statusText);
+            //     var html = jquery("#loginErrorTemplate").html();
+            //     jquery(".alert-danger.alert-dismissable").remove();
+            //     jquery("#portalLoginForm").before(html);
+            // })
+            // .always(function() {
+            //     jquery("#portalLoginBtn").button("reset");
+            // });
     };
 
     var loginDestination = function() {

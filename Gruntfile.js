@@ -67,8 +67,8 @@ module.exports = function(grunt) {
                 region: "us-east-1",
                 sslEnabled: true
                 // Omit the following options by setting equivalent environment variables.
-                //AWS_ACCESS_KEY_ID: <YOUR_KEY>,
-                //AWS_SECRET_ACCESS_KEY: <YOUR_KEY>
+                // AWS_ACCESS_KEY_ID: <YOUR_KEY>,
+                // AWS_SECRET_ACCESS_KEY: <YOUR_KEY>
             },
             backup: {
                 options: {

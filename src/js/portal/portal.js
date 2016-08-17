@@ -1,4 +1,19 @@
 define(["jquery", "portal/util"], function(jquery, util) {
+
+    var serialize = function(obj, prefix) {
+        var str = [];
+        for (var p in obj) {
+            if (obj.hasOwnProperty(p)) {
+                var k = prefix ? prefix + "[" + p + "]" : p;
+                var v = obj[p];
+                str.push(typeof v == "object" ?
+                    serialize(v, k) :
+                    encodeURIComponent(k) + "=" + encodeURIComponent(v));
+            }
+        }
+        return str.join("&");
+    };
+
     return {
         Portal: function(config) {
             config = typeof config !== "undefined" ? config : {};
@@ -55,7 +70,7 @@ define(["jquery", "portal/util"], function(jquery, util) {
              * Generates an access token in exchange for user credentials that
              * can be used by clients when working with the ArcGIS Portal API.
              */
-            this.generateToken = function(username, password) {
+            this.generateToken2 = function(username, password) {
                 return jquery.ajax({
                     type: "POST",
                     url: this.portalUrl + "sharing/rest/generateToken?",
@@ -71,6 +86,51 @@ define(["jquery", "portal/util"], function(jquery, util) {
                         withCredentials: this.withCredentials
                     }
                 });
+            };
+            this.generateToken = function(username, password) {
+                var portal = this;
+                var uri = portal.portalUrl + "sharing/rest/generateToken";
+                var data = {
+                    client: "referer",
+                    referer: window.location.hostname,
+                    expiration: 60,
+                    username: username,
+                    password: password,
+                    f: "json"
+                };
+
+                return new Promise(function(resolve, reject) {
+
+                    var xhr = new XMLHttpRequest();
+                    xhr.withCredentials = portal.withCredentials;
+
+                    xhr.addEventListener("readystatechange", function() {
+                        if (this.readyState === 4) {
+                            console.log(this.responseText);
+                            // resolve(this.responseText);
+                        }
+                    });
+
+                    xhr.open("POST", uri);
+                    xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+
+                    xhr.onload = function() {
+                        // This is called even on 404 etc
+                        // so check the status
+                        if (xhr.status == 200) {
+                            // Resolve the promise with the response text
+                            console.log(xhr);
+                            resolve(JSON.parse(xhr.responseText));
+                        } else {
+                            // Otherwise reject with the status text
+                            // which will hopefully be a meaningful error
+                            reject(Error(xhr.statusText));
+                        }
+                    };
+
+                    xhr.send(serialize(data));
+                });
+
             };
             /**
              * Searches for content items in the portal.
