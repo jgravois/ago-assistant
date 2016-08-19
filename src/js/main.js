@@ -1,8 +1,8 @@
 require([
     "jquery",
     "portal/portal",
-    "portal/info",
-    "portal/util",
+    // "portal/info",
+    // "portal/util",
     "mustache",
     "nprogress",
     "esri/arcgis/Portal",
@@ -14,8 +14,8 @@ require([
 ], function(
     jquery,
     portalSelf,
-    portalInfo,
-    portalUtil,
+    // portalInfo,
+    // portalUtil,
     mustache,
     NProgress,
     arcgisPortal,
@@ -155,29 +155,27 @@ require([
         jquery("#portalLoginBtn").button("loading");
         app.portals.sourcePortal.generateToken(username, password)
             .then(function(response) {
-                console.log("outer");
-                console.log(response.token);
-                console.log(response);
                 if (response.token) {
-                    console.log("got token");
                     app.portals.sourcePortal.token = response.token;
                     jquery("#portalLoginModal").modal("hide");
                     jquery("#splashContainer").css("display", "none");
                     jquery("#itemsContainer").css("display", "block");
                     startSession();
+                } else if (response.error.code === 400) {
+                    var html = jquery("#loginErrorTemplate").html();
+                    jquery(".alert-danger.alert-dismissable").remove();
+                    jquery("#portalLoginForm").before(html);
                 }
-                // } else if (response.error.code === 400) {
-                //     var html = jquery("#loginErrorTemplate").html();
-                //     jquery(".alert-danger.alert-dismissable").remove();
-                //     jquery("#portalLoginForm").before(html);
-                // }
+                jquery("#portalLoginBtn").button("reset");
+            })
+            .catch(function(response) {
+                console.log("catch");
+                jquery("#portalLoginBtn").button("reset");
+                console.log(response.statusText);
+                var html = jquery("#loginErrorTemplate").html();
+                jquery(".alert-danger.alert-dismissable").remove();
+                jquery("#portalLoginForm").before(html);
             });
-            // .fail(function(response) {
-            //     console.log(response.statusText);
-            //     var html = jquery("#loginErrorTemplate").html();
-            //     jquery(".alert-danger.alert-dismissable").remove();
-            //     jquery("#portalLoginForm").before(html);
-            // })
             // .always(function() {
             //     jquery("#portalLoginBtn").button("reset");
             // });
