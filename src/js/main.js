@@ -26,9 +26,9 @@ require([
 
     // *** ArcGIS OAuth ***
     var appInfo = new arcgisOAuthInfo({
-        appId: "4E1s0Mv5r0c2l6W8",
+        appId: "Cyn33oUlgf0qLhEf",
         popup: true,
-        portalUrl: "https://www.arcgis.com/"
+        portalUrl: "https://samlpadfs.ags.esri.com/arcgis"
     });
 
     // Some app level variables.
@@ -102,6 +102,9 @@ require([
     var startSession = function() {
         "use strict";
         var searchHtml;
+        if (app.portals.sourcePortal.portalUrl.indexOf('/arcgis/') <= -1) {
+          app.portals.sourcePortal.portalUrl += '/arcgis/';
+        }
         app.portals.sourcePortal.self().done(function(data) {
             var template = jquery("#sessionTemplate").html();
             var html = mustache.to_html(template, data);
@@ -1695,13 +1698,13 @@ require([
 
             // Check for previously authenticated sessions.
             esriId.registerOAuthInfos([appInfo]);
-            esriId.checkSignInStatus(appInfo.portalUrl)
+            esriId.checkSignInStatus(appInfo.portalUrl + '/sharing/')
                 .then(
                     function(user) {
                         jquery("#splashContainer").css("display", "none");
                         jquery("#itemsContainer").css("display", "block");
                         app.portals.sourcePortal = new portalSelf.Portal({
-                            portalUrl: user.server + "/",
+                            portalUrl: user.server + "/arcgis/",
                             username: user.userId,
                             token: user.token
                         });
