@@ -39,7 +39,7 @@ module.exports = function(grunt) {
                             replacement: "<%= cfg.appId %>"
                         },
                         {
-                            pattern: "<config.portalUrl>",
+                            pattern: /<config.portalUrl>/ig,
                             replacement: "<%= cfg.portalUrl %>"
                         }
                     ]
@@ -136,7 +136,7 @@ module.exports = function(grunt) {
                 livereload: true
             },
             src: {
-                files: [ 
+                files: [
                   'Gruntfile.js',
                   'config.json',
                   'src/**/*',
@@ -168,5 +168,4 @@ module.exports = function(grunt) {
     grunt.registerTask("lint", ["eslint"]);
     grunt.registerTask("serve", ["connect"]);
     grunt.registerTask("cleanup", ["clean"]);
-
 };

@@ -55,6 +55,19 @@ This project uses [Grunt](http://gruntjs.com/) to automate building the applicat
 
 Find a bug or want to request a new feature?  Please let us know by submitting an issue.
 
+## Using OAuth2 to sign into ArcGIS Enterprise
+
+Ago-assistant can be configured to support OAuth2 authentication in ArcGIS Portal as well
+
+```json
+// config.json
+{
+    "appId": "abc123",
+    "portalUrl": "https://[yourserver].com/arcgis/"
+}
+```
+more info: https://developers.arcgis.com/authentication/browser-based-user-logins/
+
 ## Contributing
 
 Anyone and everyone is welcome to contribute.
@@ -75,6 +88,3 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 A copy of the license is available in the repository's [license.txt](license.txt) file.
-
-[](Esri Tags: ArcGIS-Online Portal Assistant Copy Javascript)
-[](Esri Language: JavaScript)

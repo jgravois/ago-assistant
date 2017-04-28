@@ -22,11 +22,16 @@ require([
     hljs
 ) {
 
+    // when a custom portal url is provided in the config.json, its suffix needs to be saved for later
+    if ("<config.portalUrl>".indexOf(".com/") + 5 < "<config.portalUrl>".length) {
+        var portalSuffix = "<config.portalUrl>".split(".com/")[1];
+    }
+
     // *** ArcGIS OAuth ***
     var appInfo = new arcgisOAuthInfo({
         appId: "<config.appId>", // Set this in config.json.
         popup: true,
-        portalUrl: "<config.portalUrl>" // Set this in config.json.
+        portalUrl: "<config.portalUrl>"  // Set this in config.json.
     });
 
     // Some app level variables.
@@ -38,7 +43,8 @@ require([
             arcgisOnline: new portalSelf.Portal({
                 portalUrl: "https://www.arcgis.com/"
             })
-        }
+        },
+        portalSuffix: portalSuffix
     };
 
     /**
@@ -1905,6 +1911,12 @@ require([
             .then(function(user) {
                 jquery("#splashContainer").css("display", "none");
                 jquery("#itemsContainer").css("display", "block");
+
+                // getCredential doesn't return portal suffixes, which is okay for arcgis.com, but not other portals
+                if (user.server.indexOf("arcgis.com") === -1 && user.server.indexOf("/" + app.portalSuffix) === -1) {
+                    user.server += "/" + app.portalSuffix;
+                }
+
                 app.portals.sourcePortal = new portalSelf.Portal({
                     portalUrl: user.server + "/",
                     username: user.userId,
