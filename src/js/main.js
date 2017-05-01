@@ -22,9 +22,13 @@ require([
     hljs
 ) {
 
-    // when a custom portal url is provided in the config.json, its suffix needs to be saved for later
-    if ("<config.portalUrl>".indexOf(".com/") + 5 < "<config.portalUrl>".length) {
-        var portalSuffix = "<config.portalUrl>".split(".com/")[1];
+    // brittle attempt to try and identify the domain extension
+    var oauthUrlDomainExtension = "<config.portalUrl>".match(/.(com|net|org|gov|mil|edu)\//);
+    var portalSuffix;
+
+    // brittle check to try and determine whether '/arcgis' or something custom was configured as a portal url suffix and save the info for later
+    if ((oauthUrlDomainExtension.index + 5) < "<config.portalUrl>".length) {
+        portalSuffix = "<config.portalUrl>".split(oauthUrlDomainExtension[0])[1];
     }
 
     // *** ArcGIS OAuth ***
@@ -1918,7 +1922,7 @@ require([
                 }
 
                 app.portals.sourcePortal = new portalSelf.Portal({
-                    portalUrl: user.server + "/",
+                    portalUrl: user.server,
                     username: user.userId,
                     token: user.token
                 });
@@ -1945,9 +1949,15 @@ require([
                 oAuthPopupConfirmation: false
             }).then(function(user) {
                 // If there is no destination or the destination is not the same as ArcGIS Online
-                if (!app.portals.destinationPortal || (app.portals.destinationPortal.portalUrl !== appInfo.portalUr)) {
+                if (!app.portals.destinationPortal || (app.portals.destinationPortal.portalUrl !== appInfo.portalUrl)) {
+
+                    // getCredential doesn't return portal suffixes, which is okay for arcgis.com, but not other portals
+                    if (user.server.indexOf("arcgis.com") === -1 && user.server.indexOf("/" + app.portalSuffix) === -1) {
+                        user.server += "/" + app.portalSuffix;
+                    }
+
                     app.portals.destinationPortal = new portalSelf.Portal({
-                        portalUrl: user.server + "/",
+                        portalUrl: user.server,
                         username: user.userId,
                         token: user.token
                     });
